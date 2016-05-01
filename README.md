@@ -9,3 +9,11 @@ Required BetterDiscord and BetterAPI
 5. Enable the plugin in User Settings -> BetterDiscord -> Plugins
 
 Please report any bugs c:
+
+
+
+## Screenshots
+
+![demo](http://i.imgur.com/YdRjVnB.png)
+
+![demo](http://i.imgur.com/WhX5cwi.png)
