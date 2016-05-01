@@ -14,13 +14,45 @@ nyaaPlugin.prototype.start = function () {
     this.serverBuckets;
     try{
         this.serverBuckets = JSON.parse(localStorage.buckets);
-    }catch(e){
-        this.serverBuckets = {};
+    }catch(e){ }
+    if(!this.serverBuckets) this.serverBuckets = {};
+    
+    var bucketNames = Object.keys(this.serverBuckets);
+    if(bucketNames.length == 0){
         this.serverBuckets["bucket"] = {};
         this.serverBuckets["bucket"].servers = [];
+        bucketNames = Object.keys(this.serverBuckets);
+    }
+    for(var i = 0; i < bucketNames.length; ++i){
+        this.addBucket(bucketNames[i]);
     }
     
-    var bucketButton = $("<div style='border: 1px solid red;'>bucket</div>")
+    
+    window.addEventListener('keydown', function(e){
+        if(e.ctrlKey && e.which == 71){
+            //self.displaySearchbar()
+            
+            self.addServerPrompt();
+        }
+    });
+    
+    setTimeout(function(){
+        // Give it a second to make sure all the server are loaded on the side...
+        var bucketNames = Object.keys(self.serverBuckets);
+        for(var i=0; i < bucketNames.length; ++i){
+            var bucketName = bucketNames[i];
+            var servers = self.serverBuckets[bucketName].servers;
+            for(var s = 0; s < servers.length; ++s){
+                self.addServer(servers[s].id, servers[s].name, bucketName);
+            }
+        }
+    }, 5000);
+};
+
+nyaaPlugin.prototype.addBucket = function(bucketName){
+    var self = this;
+    
+    var bucketButton = $("<div style='border: 1px solid red;'>" + bucketName + "</div>")
         .css({
             border: '1px solid rgba(255,255,255,0.3)',
             background: 'rgba(255,255,255,0.5)',
@@ -28,8 +60,9 @@ nyaaPlugin.prototype.start = function () {
             cursor: 'pointer',
             'padding': '5px',
             'margin-bottom': '10px',
+            'font-size': '0.65em',
         });
-    var bucket = $("<div>Bucket! - Open server and press Ctrl+G to add.<br/></div>")
+    var bucket = $("<div>" + bucketName + "! <span style='float: right;'>Open server and press Ctrl+G to add.</span><br/></div>")
         .css({
             'border-radius': '5px',
             'box-shadow': '0px 3px 6px rgba(0,0,0,0.3)',
@@ -55,37 +88,76 @@ nyaaPlugin.prototype.start = function () {
            bucket.css("display", "none");
        }
     });
-    this.serverBuckets["bucket"].$elem = bucket;
-    this.serverBuckets["bucket"].$button = bucketButton;
+    if(!self.serverBuckets[bucketName]){
+        self.serverBuckets[bucketName] = {};
+        self.serverBuckets[bucketName].servers = [];
+    }
+    this.serverBuckets[bucketName].$elem = bucket;
+    this.serverBuckets[bucketName].$button = bucketButton;
     self.saveBuckets();
-    
-    window.addEventListener('keydown', function(e){
-        if(e.ctrlKey && e.which == 71){
-            //self.displaySearchbar()
-            
-            self.addServerPrompt();
-        }
-    });
-    
-    setTimeout(function(){
-        // Give it a second to make sure all the server are loaded on the side...
-        var bucketNames = Object.keys(self.serverBuckets);
-        for(var i=0; i < bucketNames.length; ++i){
-            var bucketName = bucketNames[i];
-            var servers = self.serverBuckets[bucketName].servers;
-            for(var s = 0; s < servers.length; ++s){
-                self.addServer(servers[s].id, servers[s].name, bucketName);
-            }
-        }
-    }, 5000);
-};
+}
 
 nyaaPlugin.prototype.addServerPrompt = function(){
+    var self = this;
     var currentServerId = BetterAPI.getCurrentServerID();
     var currentServerName = BetterAPI.getCurrentServerName();
     
-    //var addPrompt = $("<div>")
-    this.addServer(currentServerId, currentServerName, "bucket");
+    var addPrompt = $("<div>Add to folder:</div>")
+        .css({
+            'border-radius': '5px',
+            'box-shadow': '0px 3px 6px rgba(0,0,0,0.3)',
+            'background': 'rgba(0,0,0,0.8)',
+            'position': 'absolute',
+            'left': '50%',
+            'top': '50%',
+            'transform': 'translate(-50%, -50%)',
+            'z-index': '15',
+            'padding': '20px',
+            'color': 'white',
+            'overflow-y': 'auto',
+            'max-height': '70%',
+            'width': '300px',
+        });
+    var bucketNames = Object.keys(this.serverBuckets);
+    for(var i = 0; i < bucketNames.length; ++i){
+        (function(bucketName){
+            var bucketPrompt = $("<div>" + bucketName + "</div>")
+                .css({
+                    'padding': '10px',
+                    'background': 'rgba(32,32,32,0.8)',
+                    'width': '100%',
+                    'cursor': 'pointer',
+                    'box-sizing': 'border-box',
+                })
+                .hover(function(e){
+                    $(this).css('background', e.type === "mouseenter" ? 'rgba(64,64,64,0.8)' : 'rgba(32,32,32,0.8)');
+                })
+                .click(function(){
+                    self.addServer(currentServerId, currentServerName, bucketName);
+                    addPrompt.remove();
+                });
+            addPrompt.append(bucketPrompt);
+        })(bucketNames[i]);
+    }
+    
+    var newServerPrompt = $("<div style='margin-top: 15px;'>Create new folder:</div>");
+    var newServerInput = $("<input type='text' placeholder='name' style='width: 100%; padding: 3px; box-sizing: border-box;'/>")
+        .keyup(function(e){
+            if(e.which == 13){
+                var bucketName = newServerInput.val();
+                if(!self.serverBuckets[bucketName]) self.addBucket(bucketName);
+                self.addServer(currentServerId, currentServerName, bucketName);
+                addPrompt.remove();
+                e.preventDefault();
+            }
+        });
+    newServerPrompt.append(newServerInput);
+    addPrompt.append(newServerPrompt);
+    
+    addPrompt.append($("<div style='margin-top: 15px; cursor: pointer; font-weight: bold;'>Cancel</div>").mouseup(function(){ addPrompt.remove(); }));
+    
+    $("body").append(addPrompt);
+    //this.addServer(currentServerId, currentServerName, "bucket");
 }
 
 nyaaPlugin.prototype.addServer = function(currentServerId, currentServerName, bucketName){
@@ -150,7 +222,6 @@ nyaaPlugin.prototype.removeServer = function(serverId, bucketName){
     try{
         var servers = self.serverBuckets[bucketName].servers;
         for(var i=0; i < servers.length; ++i){
-            console.log(servers[i].id, '==', serverId, ' for remove');
             if(servers[i].id == serverId){
                 self.serverBuckets[bucketName].servers.splice(i, 1);
                 
@@ -167,8 +238,6 @@ nyaaPlugin.prototype.removeServer = function(serverId, bucketName){
                         });
                     }
                 });
-                
-                break;
             }
         }
     }catch(e){
@@ -206,7 +275,7 @@ nyaaPlugin.prototype.getDescription = function () {
     return "Some helpful stuff for lots of servers";
 };
 nyaaPlugin.prototype.getVersion = function () {
-    return "0.1.2";
+    return "0.1.3";
 };
 nyaaPlugin.prototype.getAuthor = function () {
     return "tablekat";
