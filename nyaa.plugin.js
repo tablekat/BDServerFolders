@@ -39,7 +39,7 @@ nyaaPlugin.prototype.start = function () {
             'left': '120px',
             'z-index': '10',
             'padding': '20px',
-            'width': '800px',
+            'width': '850px',
             'max-width': 'calc(100% - 200px)',
             'color': 'white',
             'overflow-y': 'auto',
@@ -106,6 +106,7 @@ nyaaPlugin.prototype.addServer = function(currentServerId, currentServerName, bu
                     'color': 'white',
                     'text-align': 'center',
                     'font-size': '0.6em',
+                    'width': '70px',
                 })
             var removeButton = $("<div>x</div>")
                 .css({
@@ -205,7 +206,7 @@ nyaaPlugin.prototype.getDescription = function () {
     return "Some helpful stuff for lots of servers";
 };
 nyaaPlugin.prototype.getVersion = function () {
-    return "0.1.1";
+    return "0.1.2";
 };
 nyaaPlugin.prototype.getAuthor = function () {
     return "tablekat";
