@@ -1,12 +1,5 @@
 //META{"name":"nyaaPlugin"}*//
 
-// https://github.com/Bluscream/BetterDiscord-Plugins-and-Themes/blob/master/src/plugins/search.plugin.js
-// https://github.com/Bluscream/BetterDiscord-Plugins-and-Themes/blob/master/src/plugins/customRoleColour.plugin.js
-// https://github.com/Bluscream/BetterDiscord-Plugins-and-Themes/blob/master/src/plugins/serverhide.plugin.js
-// https://github.com/Bluscream/BetterDiscord-Plugins-and-Themes/blob/master/src/plugins/Sorter.plugin.js
-// https://github.com/Bluscream/BetterDiscord-Plugins-and-Themes/blob/master/src/plugins/ReorderServers.plugin.js
-// https://raw.githubusercontent.com/Bluscream/BetterDiscord-Plugins-and-Themes/master/src/plugins/0_websock.plugin.js
-
 var nyaaPlugin = function () {};
 nyaaPlugin.prototype.load = function () {
     // ...
@@ -43,7 +36,7 @@ nyaaPlugin.prototype.start = function () {
             'left': '120px',
             'z-index': '10',
             'padding': '20px',
-            'max-width': '600px',
+            'max-width': '900px',
             'color': 'white',
         });
     
@@ -206,7 +199,7 @@ nyaaPlugin.prototype.getDescription = function () {
     return "Some helpful stuff for lots of servers";
 };
 nyaaPlugin.prototype.getVersion = function () {
-    return "0.1.0";
+    return "0.1.1";
 };
 nyaaPlugin.prototype.getAuthor = function () {
     return "tablekat";
