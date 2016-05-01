@@ -1,5 +1,8 @@
 //META{"name":"nyaaPlugin"}*//
 
+// https://github.com/Bluscream/BetterDiscord-Plugins-and-Themes/blob/master/src/plugins/Sorter.plugin.js
+// https://github.com/Bluscream/BetterDiscord-Plugins-and-Themes/blob/master/src/plugins/ReorderServers.plugin.js
+
 var nyaaPlugin = function () {};
 nyaaPlugin.prototype.load = function () {
     // ...
@@ -26,7 +29,7 @@ nyaaPlugin.prototype.start = function () {
             'padding': '5px',
             'margin-bottom': '10px',
         });
-    var bucket = $("<div>Bucket! - Open server and pres Ctrl+G to add.<br/></div>")
+    var bucket = $("<div>Bucket! - Open server and press Ctrl+G to add.<br/></div>")
         .css({
             'border-radius': '5px',
             'box-shadow': '0px 3px 6px rgba(0,0,0,0.3)',
@@ -36,8 +39,11 @@ nyaaPlugin.prototype.start = function () {
             'left': '120px',
             'z-index': '10',
             'padding': '20px',
-            'max-width': '900px',
+            'width': '800px',
+            'max-width': 'calc(100% - 200px)',
             'color': 'white',
+            'overflow-y': 'auto',
+            'max-height': '70%',
         });
     
     $(".guilds .guilds-separator").after(bucketButton);
