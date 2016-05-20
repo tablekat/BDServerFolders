@@ -46,7 +46,7 @@ nyaaPlugin.prototype.start = function () {
                 self.addServer(servers[s].id, servers[s].name, bucketName);
             }
         }
-    }, 5000);
+    }, localStorage.bucketTimeout || 10000);
 };
 
 nyaaPlugin.prototype.addBucket = function(bucketName){
@@ -79,8 +79,8 @@ nyaaPlugin.prototype.addBucket = function(bucketName){
             'max-height': '70%',
         });
     
-    $(".guilds .guilds-separator").after(bucketButton);
-    $(".guilds .guilds-separator").after(bucket);
+    $(".guilds .guild-separator").after(bucketButton);
+    $(".guilds .guild-separator").after(bucket);
     bucketButton.mousedown(function(){
        if(bucket.css('display') == "none"){
            bucket.css("display", "block");
@@ -164,7 +164,7 @@ nyaaPlugin.prototype.addServer = function(currentServerId, currentServerName, bu
     //alert(BetterAPI.getCurrentTextChannelName() + "\n" + BetterAPI.getCurrentTextChannelID() + "\n" + BetterAPI.getCurrentServerName() + "\n" + BetterAPI.getCurrentServerID());
     var self = this;
     
-    $('.guilds > li').each(function(i, el) {
+    $('.guilds > .guild').each(function(i, el) {
         var id = self.getGID(el);
         if(!id) return;
         var serverId = id.replace(/^[^\$]*\$/, "");
@@ -234,7 +234,7 @@ nyaaPlugin.prototype.removeServer = function(serverId, bucketName){
                         $(".guilds").append($(this)); // todo... this adds to the end of the list, not where it was before ;-;
                         p.remove();
                         $(this).css({
-                            'display': 'list-item',
+                            'display': 'block',
                         });
                     }
                 });
@@ -259,8 +259,12 @@ nyaaPlugin.prototype.unload = function () {
 };
 
 nyaaPlugin.prototype.getGID = function(el) {
-	if (!el || !el.getAttribute('data-reactid')) return;
-	return el.getAttribute('data-reactid').split('$')[1];
+	/*if (!el || !el.getAttribute('data-reactid')) return;
+	return el.getAttribute('data-reactid').split('$')[1];*/
+	if(!el) return;
+	var channelLink = $(el).find('a.avatar-small').attr('href');
+	if(!channelLink) return;
+	return channelLink.substring(channelLink.lastIndexOf('/') + 1);
 };
 
 
